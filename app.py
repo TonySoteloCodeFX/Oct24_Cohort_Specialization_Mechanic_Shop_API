@@ -1,3 +1,4 @@
+# -------------------------------------------------------------------------------> Imports
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
@@ -13,6 +14,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 
 db.init_app(app)
 
+# -------------------------------------------------------------------------------> Tables
+mechanic_ticket = db.Table(
+    "mechanic_ticket",
+    Base.metadata,
+    db.Column("ticket_id", db.ForeignKey("tickets.id")),
+    db.Column("mechanic_id", db.ForeignKey("mechanics.id"))
+)
+
+# -------------------------------------------------------------------------------> Models
 class Customer(Base):
     __tablename__ = "customers"
 
@@ -34,6 +44,8 @@ class Mechanic(Base):
     title: Mapped[str] = mapped_column(db.String(50), nullable=False)
     salary: Mapped[float] = mapped_column(nullable=False)
 
+    tickets: Mapped[list['Ticket']] = db.relationship(back_populates="mechanics")
+
 class Ticket(Base):
     __tablename__ = "tickets"
 
@@ -44,6 +56,7 @@ class Ticket(Base):
     customer_id: Mapped[int] = mapped_column(db.ForeignKey("customers.id"))
 
     customer: Mapped['Customer'] = db.relationship(back_populates="service_tickets")
+    mechanics: Mapped['Mechanic'] = db.relationship(back_populates="service_tickets")
 
 
 
