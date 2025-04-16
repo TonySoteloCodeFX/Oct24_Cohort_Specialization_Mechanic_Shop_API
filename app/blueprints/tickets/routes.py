@@ -89,4 +89,13 @@ def update_ticket(ticket_id):
     
     db.session.commit()
     return ticket_schema.jsonify(ticket), 200
-# -------------------------------------------------------------------------------> Delete Ticket Route Up Next
+# -------------------------------------------------------------------------------> Delete Ticket Route
+@tickets_bp.route('/<int:ticket_id>', methods=['DELETE'])
+def delete_ticket(ticket_id):
+    ticket = db.session.get(Ticket, ticket_id)
+
+    if ticket:
+        db.session.delete(ticket)
+        db.session.commit()
+        return jsonify(f"Deleted Ticket: {ticket_id}"), 200
+    return jsonify({"error": "Ticket does not exist."}), 404
