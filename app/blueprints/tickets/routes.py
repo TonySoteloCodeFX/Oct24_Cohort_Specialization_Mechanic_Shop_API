@@ -42,4 +42,12 @@ def get_tickets():
     query = select(Ticket)
     tickets = db.session.execute(query).scalars().all()
     return tickets_schema.jsonify(tickets), 200
-# -------------------------------------------------------------------------------> Get Ticket by ID NEXT UP
+# -------------------------------------------------------------------------------> Get Ticket by ID Route
+@tickets_bp.route('/<int:ticket_id>', methods=['GET'])
+def get_ticket_id(ticket_id):
+    ticket = db.session.get(Ticket, ticket_id)
+
+    if ticket:
+        return ticket_schema.jsonify(ticket), 200
+    return jsonify({"error": "Ticket does not exist"})
+# -------------------------------------------------------------------------------> Update Ticket up Next
