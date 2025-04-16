@@ -50,4 +50,43 @@ def get_ticket_id(ticket_id):
     if ticket:
         return ticket_schema.jsonify(ticket), 200
     return jsonify({"error": "Ticket does not exist"})
-# -------------------------------------------------------------------------------> Update Ticket up Next
+# -------------------------------------------------------------------------------> Update Ticket Route
+@tickets_bp.route('/<int:ticket_id>', methods=['PUT'])
+def update_ticket(ticket_id):
+    try:
+        ticket_data = ticket_schema.load(request.json)
+    except ValidationError as e:
+        return jsonify(e.messages), 400
+    
+    ticket = db.session.get(Ticket, ticket_id)
+
+    if not ticket:
+        return jsonify({"error": "Ticket ID does not exist."})
+    
+    ticket.service_date = ticket_data.get("service_date", ticket.service_date)
+    ticket.vin = ticket_data.get("vin", ticket.vin)
+    ticket.customer_id = ticket_data.get("customer_id", ticket.customer_id)
+
+    if "mechanic_ids" in ticket_data:
+        ticket.mechanics = []
+        for mechanic_id in ticket_data["mechanic_ids"]:
+            query = select(Mechanic).where(Mechanic.id == mechanic_id)
+            mechanic = db.session.execute(query).scalar()
+            if mechanic:
+                ticket.mechanics.append(mechanic)
+            else:
+                return jsonify({"Message": f"Invalid mechanic ID: {mechanic_id}"}), 400
+            
+    if "service_ids" in ticket_data:
+        ticket.services = []
+        for service_id in ticket_data["service_ids"]:
+            query = select(Service).where(Service.id == service_id)
+            service = db.session.execute(query).scalar()
+            if service:
+                ticket.services.append(service)
+            else:
+                return jsonify({"Messages": f"Invalid service ID: {service_id}"}), 400
+    
+    db.session.commit()
+    return ticket_schema.jsonify(ticket), 200
+# -------------------------------------------------------------------------------> Delete Ticket Route Up Next
