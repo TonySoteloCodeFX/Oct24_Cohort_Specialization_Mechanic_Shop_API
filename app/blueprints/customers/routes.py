@@ -5,8 +5,10 @@ from sqlalchemy import select
 from . import customers_bp
 from .schemas import customer_schema, customers_schema
 from app.models import Customer, db
+from app.extensions import limiter
 # -------------------------------------------------------------------------------> Create Customer Route
 @customers_bp.route('/', methods=['POST'])
+@limiter.limit("5/day")
 def create_customer():
     try:
         customer_data = customer_schema.load(request.json)
