@@ -33,4 +33,4 @@ class TicketSchema(ma.SQLAlchemyAutoSchema):
         fields = ('id', 'service_date', 'vin', 'customer', 'customer_id', 'mechanic_ids', 'mechanics', 'service_ids', 'services')
 
 ticket_schema = TicketSchema()
-tickets_schema = TicketSchema(many=True)
+tickets_schema = TicketSchema(many=True)               
