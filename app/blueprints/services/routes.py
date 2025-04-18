@@ -4,8 +4,10 @@ from sqlalchemy import select
 from . import services_bp
 from .schemas import service_schema, services_schema
 from app.models import Service, db
+from app.extensions import limiter
 # -------------------------------------------------------------------------------> Create Service Route
 @services_bp.route('/', methods=['POST'])
+@limiter.limit("20/day")
 def create_service():
     try:
         service_data = service_schema.load(request.json)
@@ -37,6 +39,7 @@ def get_service_id(service_id):
     return jsonify({"error": "Service does not exist."})
 # -------------------------------------------------------------------------------> Update Service Route
 @services_bp.route('/<int:service_id>', methods=['PUT'])
+@limiter.limit("1/day")
 def update_service(service_id):
     try:
         service_data = service_schema.load(request.json)
@@ -53,6 +56,7 @@ def update_service(service_id):
     return jsonify({"error": "Service ID does not exist."})
 # -------------------------------------------------------------------------------> Delete Service Route
 @services_bp.route('/<int:service_id>', methods=['DELETE'])
+@limiter.limit("5/day")
 def delete_service(service_id):
 
     service = db.session.get(Service, service_id)
