@@ -5,10 +5,10 @@ from sqlalchemy import select
 from . import customers_bp
 from .schemas import customer_schema, customers_schema
 from app.models import Customer, db
-from app.extensions import limiter
+from app.extensions import limiter, cache
 # -------------------------------------------------------------------------------> Create Customer Route
 @customers_bp.route('/', methods=['POST'])
-# @limiter.limit("12/day")
+@limiter.limit("12/day")
 def create_customer():
     try:
         customer_data = customer_schema.load(request.json)
@@ -26,12 +26,14 @@ def create_customer():
     return jsonify({"error": "Email already exists."}), 400
 # -------------------------------------------------------------------------------> Get All Customers Route
 @customers_bp.route('/', methods=['GET'])
+@cache.cached(timeout=30)
 def get_customers():
     query = select(Customer)
     customers = db.session.execute(query).scalars().all()
     return customers_schema.jsonify(customers), 200
 # -------------------------------------------------------------------------------> Get Customer By ID Route
 @customers_bp.route('/<int:customer_id>', methods=['GET'])
+@cache.cached(timeout=30)
 def get_customer_id(customer_id):
     customer = db.session.get(Customer, customer_id)
 
