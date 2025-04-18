@@ -4,8 +4,10 @@ from sqlalchemy import select
 from . import tickets_bp
 from .schemas import ticket_schema, tickets_schema
 from app.models import Ticket, db, Mechanic, Service
+from app.extensions import limiter
 # -------------------------------------------------------------------------------> Create Ticket Route
 @tickets_bp.route('/', methods=['POST'])
+@limiter.limit("20/hour")
 def create_ticket():
     try:
         ticket_data = ticket_schema.load(request.json)
@@ -52,6 +54,7 @@ def get_ticket_id(ticket_id):
     return jsonify({"error": "Ticket does not exist"})
 # -------------------------------------------------------------------------------> Update Ticket Route
 @tickets_bp.route('/<int:ticket_id>', methods=['PUT'])
+@limiter.limit("2/hour")
 def update_ticket(ticket_id):
     try:
         ticket_data = ticket_schema.load(request.json)
@@ -91,6 +94,7 @@ def update_ticket(ticket_id):
     return ticket_schema.jsonify(ticket), 200
 # -------------------------------------------------------------------------------> Delete Ticket Route
 @tickets_bp.route('/<int:ticket_id>', methods=['DELETE'])
+@limiter.limit("5/day")
 def delete_ticket(ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
 
