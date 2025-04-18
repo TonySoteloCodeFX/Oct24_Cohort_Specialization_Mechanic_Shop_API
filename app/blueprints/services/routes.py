@@ -4,7 +4,7 @@ from sqlalchemy import select
 from . import services_bp
 from .schemas import service_schema, services_schema
 from app.models import Service, db
-from app.extensions import limiter
+from app.extensions import limiter, cache
 # -------------------------------------------------------------------------------> Create Service Route
 @services_bp.route('/', methods=['POST'])
 @limiter.limit("20/day")
@@ -25,12 +25,14 @@ def create_service():
     return jsonify({"error": "Service already exists."}), 400
 # -------------------------------------------------------------------------------> Get All Services Route
 @services_bp.route('/', methods=['GET'])
+@cache.cached(timeout=30)
 def get_services():
     query = select(Service)
     services = db.session.execute(query).scalars().all()
     return services_schema.jsonify(services), 200
 # -------------------------------------------------------------------------------> Get Service By ID Route
 @services_bp.route('/<int:service_id>', methods=['GET'])
+@cache.cached(timeout=30)
 def get_service_id(service_id):
     service = db.session.get(Service, service_id)
 

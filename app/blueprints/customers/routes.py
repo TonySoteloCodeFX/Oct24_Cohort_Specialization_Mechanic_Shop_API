@@ -26,7 +26,6 @@ def create_customer():
     return jsonify({"error": "Email already exists."}), 400
 # -------------------------------------------------------------------------------> Get All Customers Route
 @customers_bp.route('/', methods=['GET'])
-@cache.cached(timeout=30)
 def get_customers():
     query = select(Customer)
     customers = db.session.execute(query).scalars().all()
