@@ -4,7 +4,7 @@ from sqlalchemy import select
 from . import mechanics_bp
 from .schemas import mechanic_schema, mechanics_schema
 from app.models import Mechanic, db
-from app.extensions import limiter
+from app.extensions import limiter, cache
 # -------------------------------------------------------------------------------> Create Mechanic Route
 @mechanics_bp.route('/', methods=['POST'])
 @limiter.limit("50/day")
@@ -25,12 +25,14 @@ def create_mechanic():
     return jsonify({"error": "Email already exists."}), 400
 # -------------------------------------------------------------------------------> Get All Mechanics Route
 @mechanics_bp.route('/', methods=['GET'])
+@cache.cached(timeout=30)
 def get_mechanics():
     query = select(Mechanic)
     mechanics = db.session.execute(query).scalars().all()
     return mechanics_schema.jsonify(mechanics), 200
 # -------------------------------------------------------------------------------> Get Mechanics By ID Route
 @mechanics_bp.route('/<int:mechanic_id>', methods=['GET'])
+@cache.cached(timeout=30)
 def get_mechanic_id(mechanic_id):
     mechanic = db.session.get(Mechanic, mechanic_id)
 
