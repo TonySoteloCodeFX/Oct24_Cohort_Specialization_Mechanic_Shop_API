@@ -4,8 +4,10 @@ from sqlalchemy import select
 from . import mechanics_bp
 from .schemas import mechanic_schema, mechanics_schema
 from app.models import Mechanic, db
+from app.extensions import limiter
 # -------------------------------------------------------------------------------> Create Mechanic Route
 @mechanics_bp.route('/', methods=['POST'])
+@limiter.limit("50/day")
 def create_mechanic():
     try:
         mechanic_data = mechanic_schema.load(request.json)
@@ -37,6 +39,7 @@ def get_mechanic_id(mechanic_id):
     return jsonify({"error": "Mechanic does not exist."})
 # -------------------------------------------------------------------------------> Update Mechanic Route
 @mechanics_bp.route('/<int:mechanic_id>', methods=['PUT'])
+@limiter.limit("1/15 days")
 def update_mechanic(mechanic_id):
     try:
         mechanic_data = mechanic_schema.load(request.json)
@@ -53,6 +56,7 @@ def update_mechanic(mechanic_id):
     return jsonify({"error:" "Customer ID does not exist."})
 # -------------------------------------------------------------------------------> Delete Mechanic Route
 @mechanics_bp.route('/<int:mechanic_id>', methods=['DELETE'])
+@limiter.limit("5/day")
 def delete_mechanic(mechanic_id):
 
     mechanic = db.session.get(Mechanic, mechanic_id)
