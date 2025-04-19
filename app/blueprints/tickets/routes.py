@@ -40,14 +40,12 @@ def create_ticket():
     return ticket_schema.jsonify(new_ticket), 201
 # -------------------------------------------------------------------------------> Get All Tickets Route
 @tickets_bp.route('/', methods=['GET'])
-@cache.cached(timeout=30)
 def get_tickets():
     query = select(Ticket)
     tickets = db.session.execute(query).scalars().all()
     return tickets_schema.jsonify(tickets), 200
 # -------------------------------------------------------------------------------> Get Ticket by ID Route
 @tickets_bp.route('/<int:ticket_id>', methods=['GET'])
-@cache.cached(timeout=30)
 def get_ticket_id(ticket_id):
     ticket = db.session.get(Ticket, ticket_id)
 

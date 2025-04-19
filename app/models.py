@@ -42,6 +42,7 @@ class Mechanic(Base):
     address: Mapped[str] = mapped_column(db.String(350), nullable=False)
     title: Mapped[str] = mapped_column(db.String(50), nullable=False)
     salary: Mapped[float] = mapped_column(nullable=False)
+    password: Mapped[str] = mapped_column(nullable=False)
 
     mechanic_tickets: Mapped[List['Ticket']] = db.relationship("Ticket", secondary=mechanic_ticket, back_populates="mechanics")
 # -------------------------------------------------------------------------------> Models Tickets
