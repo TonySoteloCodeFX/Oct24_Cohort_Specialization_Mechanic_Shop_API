@@ -110,3 +110,12 @@ def search_mechanic():
     query = select(Mechanic).where(Mechanic.name.ilike(f'%{name}%'))
     mechanics = db.session.execute(query).scalars().all()
     return jsonify({"mechanics": mechanics_schema.dump(mechanics)})
+# -------------------------------------------------------------------------------> Get All Mechanics Route Paginated
+@mechanics_bp.route('/paginated', methods=['GET'])
+def get_mechanics_paginated():
+    page = int(request.args.get("page"))
+    per_page = int(request.args.get("per_page"))
+
+    query = select(Mechanic)
+    mechanics = db.paginate(query, page=page, per_page=per_page)
+    return mechanics_schema.jsonify(mechanics), 200
