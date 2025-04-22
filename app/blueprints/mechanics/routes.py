@@ -2,14 +2,14 @@ from flask import Flask, jsonify, request
 from marshmallow import ValidationError
 from sqlalchemy import select
 from . import mechanics_bp
-from .schemas import mechanic_schema, mechanics_schema, login_schema
+from .schemas import mechanic_schema, mechanics_schema, login_schema, mechanic_activity_schema
 from app.models import Mechanic, db
 from app.extensions import limiter, cache
 from werkzeug.security import generate_password_hash, check_password_hash
 from app.utils.auth import encode_token, token_required
 # -------------------------------------------------------------------------------> Mechanic Login
 @mechanics_bp.route('/login', methods=['POST'])
-@limiter.limit("5 per 10 minutes")
+# @limiter.limit("5 per 10 minutes")
 def login():
     try:
         credentials = login_schema.load(request.json)
@@ -23,8 +23,6 @@ def login():
         token = encode_token(mechanic.id)
         return jsonify({"Token": token})
     return jsonify({"error": "Invalid email or password"})
-    
-
 # -------------------------------------------------------------------------------> Create Mechanic Route
 @mechanics_bp.route('/', methods=['POST'])
 @limiter.limit("50/day")
@@ -93,3 +91,14 @@ def delete_mechanic(mechanic_id):
         db.session.commit()
         return jsonify(f"Deleted Mechanic: {mechanic.name}"), 200
     return jsonify({"error": "Customer does not exist."})
+# -------------------------------------------------------------------------------> Activity Tracker Route
+@mechanics_bp.route("/activity_tracker", methods=['GET'])
+def get_activity_tracker():
+    query = select(Mechanic)
+    mechanics = db.session.execute(query).scalars().all()
+
+    mechanics.sort(key= lambda mechanic: len(mechanic.mechanic_tickets))
+
+
+    return jsonify({"message": "success",
+                   "mechanics": mechanic_activity_schema.dump(mechanics[::-1])}), 200
