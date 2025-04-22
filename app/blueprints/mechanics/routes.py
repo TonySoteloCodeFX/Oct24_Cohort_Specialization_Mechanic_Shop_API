@@ -102,3 +102,11 @@ def get_activity_tracker():
 
     return jsonify({"message": "success",
                    "mechanics": mechanic_activity_schema.dump(mechanics[::-1])}), 200
+# -------------------------------------------------------------------------------> Query Parameter Endpoint
+@mechanics_bp.route("/search", methods=['GET'])
+def search_mechanic():
+    name = request.args.get('search')
+
+    query = select(Mechanic).where(Mechanic.name.ilike(f'%{name}%'))
+    mechanics = db.session.execute(query).scalars().all()
+    return jsonify({"mechanics": mechanics_schema.dump(mechanics)})
