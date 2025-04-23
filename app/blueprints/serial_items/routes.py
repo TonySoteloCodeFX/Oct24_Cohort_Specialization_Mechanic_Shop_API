@@ -35,5 +35,3 @@ def delete_serial_item(serial_item_id):
         return jsonify(f'Deleted Item: {item}, Serial Number: {serial_item_id}'), 200
     
     return jsonify({"error": "Serial ID does not exist."}), 404
-
-# Done 
