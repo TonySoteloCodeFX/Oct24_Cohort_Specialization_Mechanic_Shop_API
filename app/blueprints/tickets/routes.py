@@ -3,7 +3,8 @@ from marshmallow import ValidationError
 from sqlalchemy import select
 from . import tickets_bp
 from .schemas import ticket_schema, tickets_schema
-from app.models import Ticket, db, Mechanic, Service
+from app.blueprints.serial_items.schemas import serial_items_schema
+from app.models import Ticket, db, Mechanic, Service, SerialItem
 from app.extensions import limiter, cache
 # -------------------------------------------------------------------------------> Create Ticket Route
 @tickets_bp.route('/', methods=['POST'])
@@ -102,4 +103,23 @@ def delete_ticket(ticket_id):
         db.session.delete(ticket)
         db.session.commit()
         return jsonify(f"Deleted Ticket: {ticket_id}"), 200
-    return jsonify({"error": "Ticket does not exist."}), 404
+    return jsonify({"error": "Ticket does not exist."}), 400
+# -------------------------------------------------------------------------------> Delete Ticket Route
+@tickets_bp.route("/<int:ticket_id>/add_item/<int:description_id>", methods=['PUT'])
+def add_item(ticket_id, description_id):
+    ticket = db.session.get(Ticket, ticket_id)
+    query = select(SerialItem).where(SerialItem.description.has(id = description_id), SerialItem.ticket_id == None)
+    item = db.session.execute(query).scalars().first()
+
+    if not item:
+        return jsonify({"error": "Item out of stock."}), 400
+    
+    if ticket:
+        item.ticket_id = ticket_id
+        db.session.commit()
+        return jsonify({
+            "message": f"Successfully added {item.description.name} to ticket",
+            'Ticket': ticket_schema.dump(ticket),
+            'Items': serial_items_schema.dump(ticket.ticket_items)
+        })
+    return jsonify({"error": "Ticket does not exist."}), 400

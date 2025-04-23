@@ -6,6 +6,7 @@ from app.blueprints.mechanics import mechanics_bp
 from app.blueprints.tickets import tickets_bp
 from app.blueprints.services import services_bp
 from app.blueprints.item_descs import item_descs_bp
+from app.blueprints.serial_items import serial_item_bp
 
 def create_app(config_name):
 
@@ -22,5 +23,6 @@ def create_app(config_name):
     app.register_blueprint(tickets_bp, url_prefix="/tickets")
     app.register_blueprint(services_bp, url_prefix="/services")
     app.register_blueprint(item_descs_bp, url_prefix="/item_descs")
+    app.register_blueprint(serial_item_bp, url_prefix="/serial_items")
 
     return app

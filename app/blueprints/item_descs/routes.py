@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 from sqlalchemy import select
 from . import item_descs_bp
 from .schemas import itemdesc_schema, itemdescs_schema
-from app.models import ItemDesc, db
+from app.models import ItemDesc, db, SerialItem
 from app.extensions import limiter, cache
 # -------------------------------------------------------------------------------> Create Item Desc Route
 @item_descs_bp.route('/', methods=['POST'])
@@ -57,7 +57,7 @@ def update_item_desc(item_desc_id):
     return jsonify({"error:" "Item does not exist."})
 # -------------------------------------------------------------------------------> Delete Item Desc Route
 @item_descs_bp.route('/<int:item_desc_id>', methods=['DELETE'])
-@limiter.limit("5/day")
+# @limiter.limit("5/day")
 def delete_item_desc(item_desc_id):
 
     item_desc = db.session.get(ItemDesc, item_desc_id)
@@ -67,3 +67,26 @@ def delete_item_desc(item_desc_id):
         db.session.commit()
         return jsonify(f"Item Deleted: {item_desc.name}"), 200
     return jsonify({"error": "Item does not exist"})
+# -------------------------------------------------------------------------------> Search Item Desc Inventory Route
+@item_descs_bp.route('/search', methods=['GET'])
+def search_item():
+
+    name = request.args.get('item')
+    
+    query = select(ItemDesc).where(ItemDesc.name.ilike(f'%{name}%'))
+    item_desc = db.session.execute(query).scalars().first()
+
+    stock_query = select(SerialItem).where(
+        SerialItem.description.has(name = item_desc.name), 
+        SerialItem.ticket_id == None)
+    stock = len(db.session.execute(stock_query).scalars().all())
+
+    if item_desc:
+        return jsonify({
+            'item': itemdesc_schema.dump(item_desc),
+            'stock': stock
+        })
+    return jsonify({"error": "No items match this search."}), 404
+
+
+
