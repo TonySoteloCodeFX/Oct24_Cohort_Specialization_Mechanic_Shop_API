@@ -10,7 +10,6 @@ from app.extensions import limiter, cache
 def create_serial_item(description_id):
     item_desc = db.session.get(ItemDesc, description_id)
     
-
     if item_desc:
         new_serial_item = SerialItem(description_id = description_id)
         db.session.add(new_serial_item)
