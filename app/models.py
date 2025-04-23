@@ -71,9 +71,13 @@ class ItemDesc(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(db.String(255), nullable=False)
     price: Mapped[float] = mapped_column(db.float, nullable=False)
+
+    serial_items: Mapped[List['SerialItem']] = db.relationship(back_populates = 'description')
 # -------------------------------------------------------------------------------> Model Serial Items
 class SerialItem(Base):
     __table__ = "serial_items"
     id: Mapped[int] = mapped_column(primary_key= True)
     description_id: Mapped[int] = mapped_column(db.ForeignKey("item_descs.id"))
     ticket_id: Mapped[int] = mapped_column(db.ForeignKey("tickets.id"), nullable=True)
+
+    description: Mapped[List['ItemDesc']] = db.relationship(back_populates = 'serial_items')
