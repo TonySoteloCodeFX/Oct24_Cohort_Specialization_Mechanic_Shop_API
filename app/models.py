@@ -65,3 +65,15 @@ class Service(Base):
     service_desc: Mapped[str] = mapped_column(db.String(100), nullable=False)
 
     service_tickets: Mapped[List['Ticket']] = db.relationship("Ticket", secondary=service_ticket, back_populates="services")
+# -------------------------------------------------------------------------------> Model Item Descriptions
+class ItemDesc(Base):
+    __table__ = "item_descs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(db.String(255), nullable=False)
+    price: Mapped[float] = mapped_column(db.float, nullable=False)
+# -------------------------------------------------------------------------------> Model Serial Items
+class SerialItem(Base):
+    __table__ = "serial_items"
+    id: Mapped[int] = mapped_column(primary_key= True)
+    description_id: Mapped[int] = mapped_column(db.ForeignKey("item_descs.id"))
+    ticket_id: Mapped[int] = mapped_column(db.ForeignKey("tickets.id"), nullable=True)
