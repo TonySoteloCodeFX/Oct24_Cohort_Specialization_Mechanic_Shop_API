@@ -56,7 +56,7 @@ def get_mechanic_id(mechanic_id):
 
     if mechanic:
         return mechanic_schema.jsonify(mechanic), 200
-    return jsonify({"error": "Mechanic does not exist."})
+    return jsonify({"error": "Mechanic does not exist."}), 400
 # -------------------------------------------------------------------------------> Update Mechanic Route
 @mechanics_bp.route('/', methods=['PUT'])
 @limiter.limit("1/15 days")
@@ -102,7 +102,7 @@ def get_activity_tracker():
 
     return jsonify({"message": "success",
                    "mechanics": mechanic_activity_schema.dump(mechanics[::-1])}), 200
-# -------------------------------------------------------------------------------> Query Parameter Endpoint
+# -------------------------------------------------------------------------------> Query Parameter Search Mechanic
 @mechanics_bp.route("/search", methods=['GET'])
 def search_mechanic():
     name = request.args.get('search')

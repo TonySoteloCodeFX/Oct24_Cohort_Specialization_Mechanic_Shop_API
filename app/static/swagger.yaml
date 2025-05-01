@@ -1,0 +1,425 @@
+swagger: '2.0'
+info:
+  title: "Mechanic API"
+  description: "API to manage a Mechanic Shop"
+  version: "1.0.0"
+host: "127.0.0.1:5000"
+schemes:
+  - "http"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+
+paths:
+
+  /customers:
+    # ------------------------------------------------------------------------------------------------------------------- Create Customer
+    post:
+        tags:
+          - Customers 
+        summary: Create a New Customer Account
+        description: Send JSON payload including customer information to create a new customer in database.
+        parameters:
+          - in: body
+            name: body
+            description: information of customer to be created
+            required: true
+            schema:
+              $ref: '#/definitions/CreateCustomerPayload'
+        responses:
+          201:
+            description: Successful Creation 
+            schema: 
+              $ref: '#/definitions/CreateCustomerResponse'
+            examples:
+              application/json:
+                email: "jhon@gmail.com"
+                id: 1
+                name: "John Doe"
+                phone: "1234567890"
+    # ------------------------------------------------------------------------------------------------------------------- Get All Mechanics
+    get:
+      tags:
+        - Customers 
+      summary: Get All Customers 
+      description: Returns all customers in database  
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllCustomers'
+          examples:
+            application/json:
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              phone: "1234567890"
+  /customers/{id}:  
+    # ------------------------------------------------------------------------------------------------------------------- Update Customer
+    put:
+      tags:
+        - Customers 
+      summary: Update Customer Account (Customer ID Required)
+      description: Update an existing customer account, requires Customer ID. 
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the customer to update
+        - in: body
+          name: body 
+          required: true
+          description: Updated Customer Information
+          schema:
+            $ref: '#/definitions/CreateCustomerPayload'
+      responses:
+        200:
+          description: Successful Update
+          schema: 
+            $ref: '#/definitions/CreateCustomerResponse'
+          examples:
+            application/json:
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              phone: "1234567890"
+    # ------------------------------------------------------------------------------------------------------------------- Delete Customer
+    delete:
+      tags:
+        - Customers 
+      summary: Delete Customer Account (Needs Customer ID)
+      description: Delete Customer with the passed in Customer ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Deletes Customer with the passed in Customer ID
+      responses:
+        200:
+          description: Successfully Deleted Customer Account
+          schema:
+            type: string
+          examples:
+            application/json:
+              "Deleted Customer: John"
+
+
+  /mechanics/login:
+    # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
+    post:
+      tags:
+        - Mechanics
+      summary: Mechanic Login (generates token)
+      description: Post login credentials if valid, user credentials will be minted and returned 
+      parameters:
+        - in: body
+          name: body
+          description: Login credentials
+          required: true
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: Successful Login
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+          examples:
+            application/json:
+              token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+  /mechanics:
+    # ------------------------------------------------------------------------------------------------------------------- Create Mechanic
+    post:
+      tags:
+        - Mechanics
+      summary: Create a New Mechanic Account
+      description: Send JSON payload including mechanic information to create a new mechanic in database.
+      parameters:
+        - in: body
+          name: body
+          description: information of mechanic to be created
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMechanicPayload'
+      responses:
+        201:
+          description: Successful Creation 
+          schema: 
+            $ref: '#/definitions/CreateMechanicResponse'
+          examples:
+            application/json:
+              address: "Los Angeles, CA"
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              phone: "1234567890"
+              salary: 80000
+              title: "Staff"
+    # ------------------------------------------------------------------------------------------------------------------- Get All Mechanics
+    get:
+      tags:
+        - Mechanics
+      summary: Get Mechanics
+      description: Returns all mechanics 
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllMechanics'
+          examples:
+            application/json:
+              address: "Los Angeles, CA"
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              phone: "1234567890"
+              salary: 80000
+              title: "Staff"
+    # ------------------------------------------------------------------------------------------------------------------- Update Mechanic
+    put:
+      tags:
+        - Mechanics
+      summary: Update Mechanic Account (Token Required)
+      description: Update an existing mechanic account, requires mechanic to be logged in. 
+      security: 
+        - bearerAuth: []
+      parameters:
+        - in: body
+          name: body
+          description: Information used to update mechanic 
+          required: true
+          schema:
+            $ref: '#/definitions/CreateMechanicPayload'
+      responses:
+        200:
+          description: Successful Update
+          schema: 
+            $ref: '#/definitions/CreateMechanicResponse'
+          examples:
+            application/json:
+              address: "Los Angeles, CA"
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              phone: "1234567890"
+              salary: 80000
+              title: "Staff"
+
+  /mechanics/{id}:
+    # ------------------------------------------------------------------------------------------------------------------- Delete Mechanic
+    delete:
+      tags:
+        - Mechanics
+      summary: Delete Mechanic Account (Needs Token)
+      description: Delete Mechanic with the passed in Mechanic ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Deletes Mechanic with the passed in Mechanic ID
+      responses:
+        200:
+          description: Successfully Deleted Mechanic Account
+          schema:
+            type: string
+          examples:
+            application/json:
+              "Deleted Mechanic: John"
+    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by ID
+    get: 
+      tags:
+        - Mechanics 
+      summary: Get a specific Mechanic using ID
+      description: Pass in a Mechanic ID as a path parameter and returns specified Mechanic
+      parameters:
+        - in: path 
+          name: id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+          description: The Mechanic ID
+      responses:
+        200:
+          description: Successful Query
+          schema:
+            $ref: '#/definitions/CreateMechanicResponse'
+          examples:
+            application/json:
+              address: "Los Angeles, CA"
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              password: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+              phone: "1234567890"
+              salary: 80000
+              title: "Staff"
+    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
+  /mechanics/search:
+    get:
+      tags:
+        - Mechanics 
+      summary: Search Mechanic(s) by name. 
+      description: Pass in a name or partial name and returns matching mechanics. 
+      parameters:
+        - in: query 
+          name: search 
+          schema:
+            type: string
+          description: Name of mechanic(s) to search. 
+      responses:
+        200:
+          description: Successful Search 
+          schema:
+            $ref: "#/definitions/SearchMechanicsList"
+
+
+definitions:
+
+  CreateMechanicPayload:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+      address:
+        type: string
+      title:
+        type: string
+      salary:
+        type: integer
+      password:
+        type: string
+
+  CreateMechanicResponse:
+    type: object
+    properties:
+      address:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      salary:
+        type: integer
+      title:
+        type: string
+
+  GetAllMechanics:
+    type: array
+    items:
+      type: object
+      properties:
+        address:
+          type: string
+        email:
+          type: string
+        id:
+          type: integer
+        name:
+          type: string
+        password:
+          type: string
+        phone:
+          type: string
+        salary:
+          type: integer
+        title:
+          type: string
+
+  SearchMechanicsList:
+    type: object
+    properties:
+      mechanics: 
+        type: array
+        items: 
+          type: object
+          properties:
+            address:
+              type: string
+            email:
+              type: string
+            id:
+              type: integer
+            name:
+              type: string
+            password:
+              type: string
+            phone:
+              type: string
+            salary:
+              type: integer
+            title:
+              type: string
+
+  CreateCustomerPayload:
+    type: object
+    properties:
+      name:
+        type: string
+      email:
+        type: string
+      phone:
+        type: string
+
+  CreateCustomerResponse:
+    type: object
+    properties:
+      email:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      phone:
+        type: string
+
+  GetAllCustomers:
+    type: array
+    items:
+      type: object
+      properties:
+        email:
+          type: string
+        id:
+          type: integer
+        name:
+          type: string
+        phone:
+          type: string

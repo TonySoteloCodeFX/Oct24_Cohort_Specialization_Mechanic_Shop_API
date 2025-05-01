@@ -32,6 +32,6 @@ def delete_serial_item(serial_item_id):
         item_name = serial_item.description.name
         db.session.delete(serial_item)
         db.session.commit()
-        return jsonify(f'Deleted Item: {item}, Serial Number: {serial_item_id}'), 200
+        return jsonify(f'Deleted Item: {item_name}, Serial Number: {serial_item_id}'), 200
     
     return jsonify({"error": "Serial ID does not exist."}), 404

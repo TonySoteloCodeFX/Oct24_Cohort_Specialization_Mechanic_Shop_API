@@ -7,6 +7,18 @@ from app.blueprints.tickets import tickets_bp
 from app.blueprints.services import services_bp
 from app.blueprints.item_descs import item_descs_bp
 from app.blueprints.serial_items import serial_item_bp
+from flask_swagger_ui import get_swaggerui_blueprint
+
+SWAGGER_URL = '/api/docs'
+API_URL = '/static/swagger.yaml'
+
+swagger_bp = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    API_URL,
+    config={
+        'app_name': "MechanicAPI"
+    }
+)
 
 def create_app(config_name):
 
@@ -24,5 +36,6 @@ def create_app(config_name):
     app.register_blueprint(services_bp, url_prefix="/services")
     app.register_blueprint(item_descs_bp, url_prefix="/item_descs")
     app.register_blueprint(serial_item_bp, url_prefix="/serial_items")
+    app.register_blueprint( swagger_bp, url_prefix=SWAGGER_URL)
 
     return app
