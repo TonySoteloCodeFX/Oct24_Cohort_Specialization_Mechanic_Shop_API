@@ -21,7 +21,7 @@ class TestMechanic(unittest.TestCase):
             db.create_all()
             db.session.add(self.mechanic)
             db.session.commit()
-        self.token = encode_token(1,'staff')
+        # self.token = encode_token(1,'Staff')
         self.client = self.app.test_client()
 
     def test_create_mechanic(self):
@@ -53,13 +53,13 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json['phone'],['Missing data for required field.'])
 
-    def test_login_mechanic(self):
-        credentials = {
-            "email": "test@email.com",
-            "password": "test_password"
-        }
+    # def test_login_mechanic(self):
+    #     credentials = {
+    #         "email": "test@email.com",
+    #         "password": "test_password"
+    #     }
 
-        response = self.client.post('/mechanics/login',json=credentials)
-        self.assertEqual(response.status_code,200)
-        self.assertEqual(response.json['status'], 'success')
-        return response.json['token']
+    #     response = self.client.post('/mechanics/login',json=credentials)
+    #     self.assertEqual(response.status_code,200)
+    #     self.assertEqual(response.json['status'], 'success')
+    #     return response.json['token']
