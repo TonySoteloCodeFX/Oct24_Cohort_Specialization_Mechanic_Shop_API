@@ -41,7 +41,7 @@ def get_service_id(service_id):
     return jsonify({"error": "Service does not exist."})
 # -------------------------------------------------------------------------------> Update Service Route
 @services_bp.route('/<int:service_id>', methods=['PUT'])
-@limiter.limit("1/day")
+@limiter.limit("10/day")
 def update_service(service_id):
     try:
         service_data = service_schema.load(request.json)

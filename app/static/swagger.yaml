@@ -19,10 +19,10 @@ securityDefinitions:
 
 
 paths:
-  # ------------------------------------------------------------------------------------------------------------------- Customer Paths
-  /customers:
-    # ------------------------------------------------------------------------------------------------------------------- Create Customer
-    post:
+  
+  /customers: # ------------------------------------------------------------------------------------------------------------------- Customer Paths
+    
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Customer
         tags:
           - Customers 
         summary: Create a New Customer Account
@@ -45,8 +45,8 @@ paths:
                 id: 1
                 name: "John Doe"
                 phone: "1234567890"
-    # ------------------------------------------------------------------------------------------------------------------- Get All Customers
-    get:
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get All Customers
       tags:
         - Customers 
       summary: Get All Customers 
@@ -63,9 +63,9 @@ paths:
               name: "John Doe"
               phone: "1234567890"
   
-  /customers/{id}:  
-    # ------------------------------------------------------------------------------------------------------------------- Get Customer by ID
-    get:
+  /customers/{id}:  # ------------------------------------------------------------------------------------------------------------------- Customer By ID Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Customer By ID
       tags:
         - Customers 
       summary: Gets Customer Account (Customer ID Required)
@@ -88,8 +88,8 @@ paths:
               id: 1
               name: "John Doe"
               phone: "1234567890"
-    # ------------------------------------------------------------------------------------------------------------------- Update Customer
-    put:
+    
+    put:  # ------------------------------------------------------------------------------------------------------------------- Update Customer
       tags:
         - Customers 
       summary: Update Customer Account (Customer ID Required)
@@ -118,8 +118,8 @@ paths:
               id: 1
               name: "John Doe"
               phone: "1234567890"
-    # ------------------------------------------------------------------------------------------------------------------- Delete Customer
-    delete:
+    
+    delete: # ------------------------------------------------------------------------------------------------------------------- Delete Customer
       tags:
         - Customers 
       summary: Delete Customer Account (Needs Customer ID)
@@ -141,10 +141,8 @@ paths:
               "Deleted Customer: John"
   
   
-  # ------------------------------------------------------------------------------------------------------------------- Mechanic Paths
-  /mechanics/login:
-    # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
-    post:
+  /mechanics/login: # ------------------------------------------------------------------------------------------------------------------- Login Mechanic Path
+    post: # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
       tags:
         - Mechanics
       summary: Mechanic Login (generates token)
@@ -173,9 +171,9 @@ paths:
             application/json:
               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
-  /mechanics:
-    # ------------------------------------------------------------------------------------------------------------------- Create Mechanic
-    post:
+  /mechanics: # ------------------------------------------------------------------------------------------------------------------- Mechanics Paths
+    
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Mechanic
       tags:
         - Mechanics
       summary: Create a New Mechanic Account
@@ -202,8 +200,8 @@ paths:
               phone: "1234567890"
               salary: 80000
               title: "Staff"
-    # ------------------------------------------------------------------------------------------------------------------- Get All Mechanics
-    get:
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get All Mechanics
       tags:
         - Mechanics
       summary: Get Mechanics
@@ -223,8 +221,8 @@ paths:
               phone: "1234567890"
               salary: 80000
               title: "Staff"
-    # ------------------------------------------------------------------------------------------------------------------- Update Mechanic
-    put:
+    
+    put:  # ------------------------------------------------------------------------------------------------------------------- Update Mechanic
       tags:
         - Mechanics
       summary: Update Mechanic Account (Token Required)
@@ -254,9 +252,9 @@ paths:
               salary: 80000
               title: "Staff"
 
-  /mechanics/{id}:
-    # ------------------------------------------------------------------------------------------------------------------- Delete Mechanic
-    delete:
+  /mechanics/{id}:  # ------------------------------------------------------------------------------------------------------------------- Mechanic By ID Paths
+    
+    delete: # ------------------------------------------------------------------------------------------------------------------- Delete Mechanic
       tags:
         - Mechanics
       summary: Delete Mechanic Account (Needs Token)
@@ -278,8 +276,8 @@ paths:
           examples:
             application/json:
               "Deleted Mechanic: John"
-    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by ID
-    get: 
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by ID
       tags:
         - Mechanics 
       summary: Get a specific Mechanic using ID
@@ -308,9 +306,9 @@ paths:
               salary: 80000
               title: "Staff"
     
-  /mechanics/search:
-    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
-    get:
+  /mechanics/search:  # ------------------------------------------------------------------------------------------------------------------- Mechanic By Search Parameter Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
       tags:
         - Mechanics 
       summary: Search Mechanic(s) by name. 
@@ -327,9 +325,9 @@ paths:
           schema:
             $ref: "#/definitions/SearchMechanicsList"
 
-  /mechanics/activity_tracker: 
-    # ------------------------------------------------------------------------------------------------------------------- Mechanic Activity Tracker
-    get:
+  /mechanics/activity_tracker: # ------------------------------------------------------------------------------------------------------------------- Mechanic Activity Tracker Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic Activity
       tags:
         - Mechanics 
       summary: Returns list of mechanics based on activity
@@ -340,43 +338,192 @@ paths:
           schema:
             $ref: '#/definitions/GetAllMechanics'
 
-
-  /services:
-    # ------------------------------------------------------------------------------------------------------------------- Create service
-    post:
+  /mechanics/paginated: # ------------------------------------------------------------------------------------------------------------------- Mechanic Paginated Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic Paginated 
       tags:
-        - Services
-      summary: Creates a new service 
-      description: Send JSON payload with new service information
+        - Mechanics
+      summary: Returns Mechanics two entries per page. 
+      description: Returns two mechanics per page 
+      parameters:
+        - in: query
+          name: page 
+          type: integer 
+          required: true
+          description: Page Number default at 1.
+          default: 1
+        - in: query
+          name: per_page
+          type: integer
+          required: true
+          description: Number of entries per page 
+          default: 2
+      responses:
+        200:
+          description: Successful Retrieval
+          schema:
+            $ref: '#/definitions/GetAllMechanics'
+
+
+  /services:  # ------------------------------------------------------------------------------------------------------------------- Services Path
+
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Service
+      tags:
+        - Services 
+      summary: Create a New Service 
+      description: Send JSON payload including service information to create a new service in database.
+      consumes:
+        - application/json
+      produces:
+        - application/json
       parameters:
         - in: body
           name: body
           description: information of service to be created
           required: true
           schema:
-            $ref: '#/definitions/....'
+            $ref: '#/definitions/CreateServicePayload'
       responses:
         201:
           description: Successful Creation 
           schema: 
-            $ref: '#/definitions/....'
+            $ref: '#/definitions/CreateServiceResponse'
+          examples:
+            application/json:
+              id: 1
+              name: "Oil Change"
+
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get All Services
+      tags:
+        - Services
+      summary: Get All Services 
+      description: Returns all services in database  
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllCustomers'
+          examples:
+            application/json:
+              id: 1
+              name: "Oil Change"
+  
+  /services/{id}: # ------------------------------------------------------------------------------------------------------------------- Services By ID Path
+
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Service By ID
+      tags:
+        - Services
+      summary: Gets Service (Service ID Required)
+      description: Returns an existing service, requires Service ID.
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the service to get 
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllServices'
           examples:
             application/json:
               id: 1
               service_desc: "Oil Change"
 
+    put:  # ------------------------------------------------------------------------------------------------------------------- Update Service
+      tags:
+        - Services 
+      summary: Update Service (Service ID Required)
+      description: Update an existing service, requires Service ID. 
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the service to update
+        - in: body
+          name: body 
+          required: true
+          description: Updated Service Information
+          schema:
+            $ref: '#/definitions/CreateServicePayload'
+      responses:
+        200:
+          description: Successful Update
+          schema: 
+            $ref: '#/definitions/CreateServiceResponse'
+          examples:
+            application/json:
+              id: 1
+              service_desc: "Oil Change"
+
+    delete: # ------------------------------------------------------------------------------------------------------------------- Delete Service
+      tags:
+        - Services 
+      summary: Delete Service (Needs Service ID)
+      description: Delete Service with the passed in Service ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Deletes Service with the passed in Customer ID
+      responses:
+        200:
+          description: Successfully Deleted Service 
+          schema:
+            type: string
+          examples:
+            application/json:
+              "Deleted Service: Oil Change"
 
 
-# ^^^^^^^^^^^^^^^^^^^^^^^^^^  This is where I left off :( 
 
 
+
+
+
+  
+  /item_descs:  # ------------------------------------------------------------------------------------------------------------------- Product Descriptions Paths
+    
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Product Descriptions
+      tags:
+        - Product Descriptions 
+      summary: Create a New Product Description 
+      description: Send JSON payload including product information to create a new product in database.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: information of product to be created
+          required: true
+          schema:
+            $ref: '#/definitions/create_item_desc_payload'
+      responses:
+        201:
+          description: Successful Creation 
+          schema: 
+            $ref: '#/definitions/create_item_desc_response'
+          examples:
+            application/json:
+              id: 1
+              name: "headlights"
+              price: 20.55
+        
 
 
 
 
 
 definitions:
-
+  # ------------------------------------------------------------------------------------------------------------------- Mechanic Definitions
   CreateMechanicPayload:
     type: object
     properties:
@@ -461,7 +608,7 @@ definitions:
               type: integer
             title:
               type: string
-
+  # ------------------------------------------------------------------------------------------------------------------- Customer Definitions
   CreateCustomerPayload:
     type: object
     properties:
@@ -497,8 +644,8 @@ definitions:
           type: string
         phone:
           type: string
-
-  ItemDescPayload:
+  # ------------------------------------------------------------------------------------------------------------------- Item Desc Definitions
+  create_item_desc_payload:
     type: object
     properties:
       name:
@@ -506,16 +653,40 @@ definitions:
       price:
         type: integer
 
-  ItemDescResponse:
+  create_item_desc_response:
     type: object
     properties:
       id:
         type: integer
-      name:
+      name: 
         type: string
       price:
-        type: integer
-  
+        type: integer 
+  # ------------------------------------------------------------------------------------------------------------------- Service Definitions
+  CreateServicePayload:
+    type: object
+    properties:
+      service_desc: 
+        type: string
+
+  CreateServiceResponse:
+    type: object
+    properties:
+      id: 
+        type: integer 
+      service_desc: 
+        type: string 
+
+  GetAllServices:
+    type: array
+    items:
+      type: object
+      properties:
+        id: 
+          type: integer
+        service_desc:
+          type: string
+
 
 
 
