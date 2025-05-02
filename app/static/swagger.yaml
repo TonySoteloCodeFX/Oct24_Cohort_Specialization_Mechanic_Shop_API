@@ -19,7 +19,7 @@ securityDefinitions:
 
 
 paths:
-
+  # ------------------------------------------------------------------------------------------------------------------- Customer Paths
   /customers:
     # ------------------------------------------------------------------------------------------------------------------- Create Customer
     post:
@@ -45,7 +45,7 @@ paths:
                 id: 1
                 name: "John Doe"
                 phone: "1234567890"
-    # ------------------------------------------------------------------------------------------------------------------- Get All Mechanics
+    # ------------------------------------------------------------------------------------------------------------------- Get All Customers
     get:
       tags:
         - Customers 
@@ -62,7 +62,32 @@ paths:
               id: 1
               name: "John Doe"
               phone: "1234567890"
+  
   /customers/{id}:  
+    # ------------------------------------------------------------------------------------------------------------------- Get Customer by ID
+    get:
+      tags:
+        - Customers 
+      summary: Gets Customer Account (Customer ID Required)
+      description: Returns an existing customer account, requires Customer ID.
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the customer to get 
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllCustomers'
+          examples:
+            application/json:
+              email: "jhon@gmail.com"
+              id: 1
+              name: "John Doe"
+              phone: "1234567890"
     # ------------------------------------------------------------------------------------------------------------------- Update Customer
     put:
       tags:
@@ -114,8 +139,7 @@ paths:
           examples:
             application/json:
               "Deleted Customer: John"
-
-
+  # ------------------------------------------------------------------------------------------------------------------- Mechanic Paths
   /mechanics/login:
     # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
     post:
@@ -281,8 +305,9 @@ paths:
               phone: "1234567890"
               salary: 80000
               title: "Staff"
-    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
+    
   /mechanics/search:
+    # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
     get:
       tags:
         - Mechanics 
@@ -299,6 +324,22 @@ paths:
           description: Successful Search 
           schema:
             $ref: "#/definitions/SearchMechanicsList"
+
+  /mechanics/activity_tracker: 
+    # ------------------------------------------------------------------------------------------------------------------- Mechanic Activity Tracker
+    get:
+      tags:
+        - Mechanics 
+      summary: Returns list of mechanics based on activity
+      description: Returns a list of mechanics, most active to least based on ticket assignment.
+      responses:
+        200:
+          description: Successful Retrieval
+          schema:
+            $ref: '#/definitions/GetAllMechanics'
+
+
+
 
 
 definitions:
@@ -423,3 +464,8 @@ definitions:
           type: string
         phone:
           type: string
+
+
+
+
+

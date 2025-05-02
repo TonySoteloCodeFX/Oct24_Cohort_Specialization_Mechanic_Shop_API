@@ -1,6 +1,7 @@
 from app import create_app
 from app.models import db, Mechanic
 from app.utils.auth import encode_token
+from werkzeug.security import generate_password_hash
 import unittest
 
 
@@ -13,15 +14,15 @@ class TestMechanic(unittest.TestCase):
             phone='test_phone',
             address='test_address',
             title='test_title',
-            salary=50000.00,
-            password='test_password' 
+            salary=50000,
+            password=generate_password_hash('test_password') 
             )
         with self.app.app_context():
             db.drop_all()
             db.create_all()
             db.session.add(self.mechanic)
             db.session.commit()
-        # self.token = encode_token(1,'Staff')
+        self.token = encode_token(1)
         self.client = self.app.test_client()
 
     def test_create_mechanic(self):
@@ -53,13 +54,12 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json['phone'],['Missing data for required field.'])
 
-    # def test_login_mechanic(self):
-    #     credentials = {
-    #         "email": "test@email.com",
-    #         "password": "test_password"
-    #     }
+    def test_login_mechanic(self):
+        credentials = {
+            "email": "test@email.com",
+            "password": "test_password"
+        }
 
-    #     response = self.client.post('/mechanics/login',json=credentials)
-    #     self.assertEqual(response.status_code,200)
-    #     self.assertEqual(response.json['status'], 'success')
-    #     return response.json['token']
+        response = self.client.post('/mechanics/login',json=credentials)
+        self.assertEqual(response.status_code,200)
+        return response.json['Token']
