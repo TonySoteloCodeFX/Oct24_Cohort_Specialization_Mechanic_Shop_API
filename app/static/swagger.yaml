@@ -139,6 +139,8 @@ paths:
           examples:
             application/json:
               "Deleted Customer: John"
+  
+  
   # ------------------------------------------------------------------------------------------------------------------- Mechanic Paths
   /mechanics/login:
     # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
@@ -339,6 +341,37 @@ paths:
             $ref: '#/definitions/GetAllMechanics'
 
 
+  /services:
+    # ------------------------------------------------------------------------------------------------------------------- Create service
+    post:
+      tags:
+        - Services
+      summary: Creates a new service 
+      description: Send JSON payload with new service information
+      parameters:
+        - in: body
+          name: body
+          description: information of service to be created
+          required: true
+          schema:
+            $ref: '#/definitions/....'
+      responses:
+        201:
+          description: Successful Creation 
+          schema: 
+            $ref: '#/definitions/....'
+          examples:
+            application/json:
+              id: 1
+              service_desc: "Oil Change"
+
+
+
+# ^^^^^^^^^^^^^^^^^^^^^^^^^^  This is where I left off :( 
+
+
+
+
 
 
 
@@ -465,7 +498,24 @@ definitions:
         phone:
           type: string
 
+  ItemDescPayload:
+    type: object
+    properties:
+      name:
+        type: string
+      price:
+        type: integer
 
+  ItemDescResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      price:
+        type: integer
+  
 
 
 
