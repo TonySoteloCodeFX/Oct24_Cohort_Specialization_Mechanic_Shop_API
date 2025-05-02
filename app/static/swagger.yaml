@@ -19,7 +19,7 @@ securityDefinitions:
 
 
 paths:
-  
+
   /customers: # ------------------------------------------------------------------------------------------------------------------- Customer Paths
     
     post: # ------------------------------------------------------------------------------------------------------------------- Create Customer
@@ -139,6 +139,7 @@ paths:
           examples:
             application/json:
               "Deleted Customer: John"
+
   
   
   /mechanics/login: # ------------------------------------------------------------------------------------------------------------------- Login Mechanic Path
@@ -365,6 +366,7 @@ paths:
             $ref: '#/definitions/GetAllMechanics'
 
 
+
   /services:  # ------------------------------------------------------------------------------------------------------------------- Services Path
 
     post: # ------------------------------------------------------------------------------------------------------------------- Create Service
@@ -483,12 +485,150 @@ paths:
 
 
 
+  /tickets:  # ------------------------------------------------------------------------------------------------------------------- Tickets Path
+
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Ticket
+      tags:
+        - Tickets
+      summary: Create a New Ticket 
+      description: Send JSON payload including ticket information to create a new ticket in database.
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      parameters:
+        - in: body
+          name: body
+          description: information of ticket to be created
+          required: true
+          schema:
+            $ref: '#/definitions/CreateTicketPayload'
+      responses:
+        201:
+          description: Successful Creation 
+          schema: 
+            $ref: '#/definitions/CreateTicketResponse'
+          examples:
+            application/json:
+              id: 101 
+              service_date: "2025-05-02"
+              vin: "1HGCM82633A004352"
+              customer: 
+                id: 12
+                name: "Jane Doe"
+              mechanics: 
+                - id: 1
+                  name: "John Wrench" 
+                - id: 2
+                  name: "Lana Lift"
+              services: 
+                - id: 5
+                  service_desc: "oil Change" 
+                - id: 8
+                  service_desc: "Tire Rotation"
+
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get All Tickets
+      tags:
+        - Tickets
+      summary: Get All Tickets
+      description: Returns a list of all tickets with associated customer, mechanics, and services.
+      produces:
+        - application/json
+      responses:
+        200:
+          description: A list of tickets
+          schema:
+            $ref: '#/definitions/GetAllTicketsResponse'
+          examples:
+            application/json:
+              - id: 101
+                service_date: "2025-05-02"
+                vin: "1HGCM82633A004352"
+                customer:
+                  id: 12
+                  name: "Jane Doe"
+                mechanics:
+                  - id: 1
+                    name: "John Wrench"
+                  - id: 2
+                    name: "Lana Lift"
+                services:
+                  - id: 5
+                    service_desc: "Oil Change"
+                  - id: 8
+                    service_desc: "Tire Rotation"
+              - id: 102
+                service_date: "2025-05-03"
+                vin: "1J4FA49S54P708374"
+                customer:
+                  id: 14
+                  name: "Mike Spanner"
+                mechanics:
+                  - id: 3
+                    name: "Terry Torque"
+                services:
+                  - id: 2
+                    service_desc: "Brake Inspection"
+
+  /tickets/{id}:  # ------------------------------------------------------------------------------------------------------------------- Tickets By ID Path
+
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Tickets By ID
+      tags:
+        - Tickets
+      summary: Get Ticket by ID
+      description: Returns a single ticket by its unique ID, including customer, mechanics, and services.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: ID of the ticket to retrieve
+      responses:
+        200:
+          description: A single ticket object
+          schema:
+            $ref: '#/definitions/GetAllTickets'
+          examples:
+            application/json:
+              id: 101
+              service_date: "2025-05-02"
+              vin: "1HGCM82633A004352"
+              customer:
+                id: 12
+                name: "Jane Doe"
+              mechanics:
+                - id: 1
+                  name: "John Wrench"
+                - id: 2
+                  name: "Lana Lift"
+              services:
+                - id: 5
+                  service_desc: "Oil Change"
+                - id: 8
+                  service_desc: "Tire Rotation"
+
+    delete: # ------------------------------------------------------------------------------------------------------------------- Delete Ticket
+      tags:
+        - Tickets
+      summary: Delete Ticket by ID
+      description: Deletes a ticket from the database using its ID.
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: integer
+          description: ID of the ticket to delete
+      responses:
+        204:
+          description: "Deleted Ticket: 6"
+    
 
 
-
-
-  
-  /item_descs:  # ------------------------------------------------------------------------------------------------------------------- Product Descriptions Paths
+  /item_descs:  # ------------------------------------------------------------------------------------------------------------------- Item Descriptions Paths
     
     post: # ------------------------------------------------------------------------------------------------------------------- Create Product Descriptions
       tags:
@@ -518,11 +658,12 @@ paths:
               price: 20.55
         
 
-
+# ------------------------------------------------------------------------------------------------------------------- This is where I left Off ^^^^^^^^^
 
 
 
 definitions:
+
   # ------------------------------------------------------------------------------------------------------------------- Mechanic Definitions
   CreateMechanicPayload:
     type: object
@@ -608,6 +749,7 @@ definitions:
               type: integer
             title:
               type: string
+  
   # ------------------------------------------------------------------------------------------------------------------- Customer Definitions
   CreateCustomerPayload:
     type: object
@@ -644,24 +786,7 @@ definitions:
           type: string
         phone:
           type: string
-  # ------------------------------------------------------------------------------------------------------------------- Item Desc Definitions
-  create_item_desc_payload:
-    type: object
-    properties:
-      name:
-        type: string
-      price:
-        type: integer
-
-  create_item_desc_response:
-    type: object
-    properties:
-      id:
-        type: integer
-      name: 
-        type: string
-      price:
-        type: integer 
+  
   # ------------------------------------------------------------------------------------------------------------------- Service Definitions
   CreateServicePayload:
     type: object
@@ -686,6 +811,156 @@ definitions:
           type: integer
         service_desc:
           type: string
+
+  # ------------------------------------------------------------------------------------------------------------------- Ticket Definitions
+  CreateTicketPayload:
+    type: object
+    required:
+      - service_date
+      - vin
+      - customer_id
+      - mechanic_ids
+      - service_ids
+    properties:
+      service_date:
+        type: string
+        format: date
+        example: "2025-05-02"
+      vin:
+        type: string
+        example: "1HGCM82633A004352"
+      customer_id:
+        type: integer
+        example: 12
+      mechanic_ids:
+        type: array
+        items:
+          type: integer
+        example: [1, 2]
+      service_ids:
+        type: array
+        items:
+          type: integer
+        example: [5, 8]
+
+  CreateTicketResponse:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 101
+      service_date:
+        type: string
+        format: date
+        example: "2025-05-02"
+      vin:
+        type: string
+        example: "1HGCM82633A004352"
+      customer:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 12
+          name:
+            type: string
+            example: "Jane Doe"
+      mechanics:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            name:
+              type: string
+              example: "John Wrench"
+      services:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 5
+            service_desc:
+              type: string
+              example: "Oil Change"
+
+  GetAllTicketsResponse:
+    type: array
+    items:
+      type: object
+      properties:
+        id:
+          type: integer
+        service_date:
+          type: string
+          format: date
+        vin:
+          type: string
+        customer:
+          type: object
+          properties:
+            id:
+              type: integer
+            name:
+              type: string
+        mechanics:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              name:
+                type: string
+        services:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+              service_desc:
+                type: string
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  # ------------------------------------------------------------------------------------------------------------------- Item Desc Definitions
+  create_item_desc_payload:
+    type: object
+    properties:
+      name:
+        type: string
+      price:
+        type: integer
+
+  create_item_desc_response:
+    type: object
+    properties:
+      id:
+        type: integer
+      name: 
+        type: string
+      price:
+        type: integer 
+  
 
 
 
