@@ -38,19 +38,77 @@ class TestCustomer(unittest.TestCase):
             "phone": "661-202-9461"
         }
 
-        response_post = self.client.post('/customers/', json=customer_payload)  # --- Creating the client 1st
+        response_post = self.client.post('/customers/', json=customer_payload)  
         self.assertEqual(response_post.status_code, 201)
 
-        response_get = self.client.get('/customers/')   # --- Sending GET
+        response_get = self.client.get('/customers/')   
         self.assertEqual(response_get.status_code, 200)
 
-        data = response_get.get_json()  # --- Getting the response_get and making it into a python list of dictionaries 
+        data = response_get.get_json()  
 
         customer_exists = False
 
-        for customer in data:   # --- Something I'm good at :)
+        for customer in data:   
             if customer['name'] == "John Doe":
                 customer_exists = True
                 break 
         self.assertTrue
 
+    def test_get_customer_by_id(self):  #------------------------------------------------------ Get Customers By ID Test Passed 🙂
+        customer_payload = {
+            "name": "John Doe",
+            "email": "jd@email.com",
+            "phone": "661-202-9461"
+        }
+
+        post_response = self.client.post('/customers/', json=customer_payload)
+        self.assertEqual(post_response.status_code, 201)
+
+        customer_id = post_response.get_json()['id']
+
+        get_response = self.client.get(f'/customers/{customer_id}')
+        self.assertEqual(get_response.status_code, 200)
+
+        customer_data = get_response.get_json()
+        self.assertEqual(customer_data['name'], "John Doe")
+
+    def test_update_customer(self): #------------------------------------------------------ Update Customer Test Passed 🙂
+        original_payload = {
+            "name": "John Doe",
+            "email": "jd@email.com",
+            "phone": "661-202-9461"
+        }
+
+        post_response = self.client.post('/customers/', json=original_payload)
+        self.assertEqual(post_response.status_code, 201)
+
+        customer_id = post_response.get_json()['id']
+
+        updated_payload = {
+            "name": "Johnny Dough",
+            "email": "johnny@email.com",
+            "phone": "123-456-7890"
+        }
+
+        put_response = self.client.put(f'/customers/{customer_id}', json=updated_payload)
+        self.assertEqual(put_response.status_code, 200)
+
+        updated_data = put_response.get_json()
+        self.assertEqual(updated_data['name'], "Johnny Dough")
+        self.assertEqual(updated_data['email'], "johnny@email.com")
+        self.assertEqual(updated_data['phone'], "123-456-7890")
+
+    def test_delete_customer(self):  #------------------------------------------------------ Delete Customer Test Passed 🙂
+        customer_payload = {
+            "name": "John Doe",
+            "email": "jd@email.com",
+            "phone": "661-202-9461"
+        }
+
+        post_response = self.client.post('/customers/', json=customer_payload)
+        self.assertEqual(post_response.status_code, 201)
+
+        customer_id = post_response.get_json()['id']
+
+        delete_response = self.client.delete(f'/customers/{customer_id}')
+        self.assertEqual(delete_response.status_code, 200)
