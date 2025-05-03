@@ -104,7 +104,7 @@ def delete_ticket(ticket_id):
         db.session.commit()
         return jsonify(f"Deleted Ticket: {ticket_id}"), 200
     return jsonify({"error": "Ticket does not exist."}), 400
-# -------------------------------------------------------------------------------> Delete Ticket Route
+# -------------------------------------------------------------------------------> Add Item to Ticket Route
 @tickets_bp.route("/<int:ticket_id>/add_item/<int:description_id>", methods=['PUT'])
 def add_item(ticket_id, description_id):
     ticket = db.session.get(Ticket, ticket_id)

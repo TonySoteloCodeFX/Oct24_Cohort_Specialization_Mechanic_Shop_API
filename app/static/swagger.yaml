@@ -609,6 +609,54 @@ paths:
                 - id: 8
                   service_desc: "Tire Rotation"
 
+    put:  # ------------------------------------------------------------------------------------------------------------------- Update Ticket
+      tags:
+        - Tickets 
+      summary: Update Ticket (Ticket ID Required)
+      description: Update an existing ticket, requires Ticket ID. 
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the ticket to update
+        - in: body
+          name: body 
+          required: true
+          description: Updated Ticket Information
+          schema:
+            $ref: '#/definitions/CreateTicketPayload'
+      responses:
+        200:
+          description: Successful Update
+          schema: 
+            $ref: '#/definitions/CreateTicketResponse'
+          examples:
+            application/json:
+              id: 101
+              service_date: "2025-05-02"
+              vin: "1HGCM82633A004352"
+              customer:
+                id: 12
+                name: "Jane Doe"
+              mechanics:
+                - id: 1
+                  name: "John Wrench"
+                - id: 2
+                  name: "Lana Lift"
+              services:
+                - id: 5
+                  service_desc: "Oil Change"
+                - id: 8
+                  service_desc: "Tire Rotation"
+
+
+
+
+
+
+
     delete: # ------------------------------------------------------------------------------------------------------------------- Delete Ticket
       tags:
         - Tickets
@@ -625,14 +673,14 @@ paths:
       responses:
         204:
           description: "Deleted Ticket: 6"
-    
+
 
 
   /item_descs:  # ------------------------------------------------------------------------------------------------------------------- Item Descriptions Paths
     
-    post: # ------------------------------------------------------------------------------------------------------------------- Create Product Descriptions
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Item Descriptions
       tags:
-        - Product Descriptions 
+        - Item Descriptions 
       summary: Create a New Product Description 
       description: Send JSON payload including product information to create a new product in database.
       consumes:
@@ -656,9 +704,128 @@ paths:
               id: 1
               name: "headlights"
               price: 20.55
-        
 
-# ------------------------------------------------------------------------------------------------------------------- This is where I left Off ^^^^^^^^^
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get All Item Descriptions
+      tags:
+        - Item Descriptions
+      summary: Get All Item Descriptions  
+      description: Returns all items in database  
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllItems'
+          examples:
+            application/json:
+              id: 1
+              name: "Tire"
+              price: 150.99    
+
+  /item_descs/{id}:  # ------------------------------------------------------------------------------------------------------------------- Item By ID Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Item By ID
+      tags:
+        - Item Descriptions
+      summary: Gets Item (Item ID Required)
+      description: Returns an existing item, requires Item ID.
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the item to get 
+      responses:
+        200:
+          description: Successful Retrieval  
+          schema: 
+            $ref: '#/definitions/GetAllItems'
+          examples:
+            application/json:
+              id: 1
+              name: "Tire"
+              price: 150.99
+
+    put:  # ------------------------------------------------------------------------------------------------------------------- Update Customer
+      tags:
+        - Item Descriptions 
+      summary: Update Item Description (Item ID Required)
+      description: Update an existing item, requires item ID. 
+      parameters:
+        - in: path 
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: ID of the item to update
+        - in: body
+          name: body 
+          required: true
+          description: Updated Item Information
+          schema:
+            $ref: '#/definitions/create_item_desc_payload'
+      responses:
+        200:
+          description: Successful Update
+          schema: 
+            $ref: '#/definitions/create_item_desc_response'
+          examples:
+            application/json:
+              id: 1
+              name: "Gasket"
+              price: 30.55
+
+    delete: # ------------------------------------------------------------------------------------------------------------------- Delete Item
+      tags:
+        - Item Descriptions 
+      summary: Delete Item Description (Needs Item ID)
+      description: Delete Item with the passed in Item ID
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: integer
+          required: true
+          description: Deletes Item with the passed in Item ID
+      responses:
+        200:
+          description: Successfully Deleted Item Description 
+          schema:
+            type: string
+          examples:
+            application/json:
+              "Deleted Item: Gasket"
+
+  /item_descs/search:  # ------------------------------------------------------------------------------------------------------------------- Item By Search Parameter Path
+    
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Item by Search Parameter
+      tags:
+        - Item Descriptions  
+      summary: Search Item(s) by name. 
+      description: Pass in a name or partial name and returns matching items. 
+      produces:
+        - application/json
+      parameters:
+        - in: query 
+          name: item
+          required: true
+          type: string
+      responses:
+        200:
+          description: Successful Search 
+          schema:
+            $ref: "#/definitions/item_desc_response"
+          examples:
+            application/json:
+              item: 
+                id: 1
+                name: "Oil Filter"
+                price: 14.99
+              stock: 12
+
+
+
+# ---------------------------------------------------------------- Serial Items Paths Next 
 
 
 
@@ -926,22 +1093,6 @@ definitions:
               service_desc:
                 type: string
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   # ------------------------------------------------------------------------------------------------------------------- Item Desc Definitions
   create_item_desc_payload:
     type: object
@@ -949,7 +1100,7 @@ definitions:
       name:
         type: string
       price:
-        type: integer
+        type: number 
 
   create_item_desc_response:
     type: object
@@ -959,8 +1110,39 @@ definitions:
       name: 
         type: string
       price:
-        type: integer 
-  
+        type: number 
+
+  GetAllItems:
+    type: array
+    items: 
+      type: object
+      properties:
+        id: 
+          type: integer 
+        name: 
+          type: string
+        price:
+          type: number 
+
+  item_desc_response:
+    type: object
+    properties:
+      item:
+        type: object
+        properties:
+          id:
+            type: integer
+            example: 1
+          name:
+            type: string
+            example: "Oil Filter"
+          price:
+            type: number
+            example: 14.99
+      stock:
+        type: integer
+        example: 12
+
 
 
 
