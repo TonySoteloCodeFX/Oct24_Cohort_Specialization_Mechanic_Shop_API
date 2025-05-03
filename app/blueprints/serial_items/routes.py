@@ -5,7 +5,7 @@ from . import serial_item_bp
 from .schemas import serial_item_schema, serial_items_schema
 from app.models import ItemDesc, SerialItem, db
 from app.extensions import limiter, cache
-# -------------------------------------------------------------------------------> Create Item Desc Route
+# -------------------------------------------------------------------------------> Create Serial Item Route
 @serial_item_bp.route('/<int:description_id>', methods=['POST'])
 def create_serial_item(description_id):
     item_desc = db.session.get(ItemDesc, description_id)
@@ -16,7 +16,7 @@ def create_serial_item(description_id):
         db.session.commit()
         return serial_item_schema.jsonify(new_serial_item), 201
     return jsonify({"error": f"Invalid {description_id}"})
-# -------------------------------------------------------------------------------> Get All Item Desc Route
+# -------------------------------------------------------------------------------> Get All Serial Items Route
 @serial_item_bp.route('/', methods=['GET'])
 def get_serial_item():
     query = select(SerialItem)

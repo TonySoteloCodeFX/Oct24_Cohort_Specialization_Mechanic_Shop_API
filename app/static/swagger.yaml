@@ -19,8 +19,8 @@ securityDefinitions:
 
 
 paths:
-
-  /customers: # ------------------------------------------------------------------------------------------------------------------- Customer Paths
+  # ------------------------------------------------------------------------------------------------------------------- Customer Paths
+  /customers: 
     
     post: # ------------------------------------------------------------------------------------------------------------------- Create Customer
         tags:
@@ -63,7 +63,7 @@ paths:
               name: "John Doe"
               phone: "1234567890"
   
-  /customers/{id}:  # ------------------------------------------------------------------------------------------------------------------- Customer By ID Path
+  /customers/{id}:  
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Customer By ID
       tags:
@@ -141,8 +141,8 @@ paths:
               "Deleted Customer: John"
 
   
-  
-  /mechanics/login: # ------------------------------------------------------------------------------------------------------------------- Login Mechanic Path
+  # ------------------------------------------------------------------------------------------------------------------- Mechanic Paths
+  /mechanics/login: 
     post: # ------------------------------------------------------------------------------------------------------------------- Login Mechanic
       tags:
         - Mechanics
@@ -172,7 +172,7 @@ paths:
             application/json:
               token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
 
-  /mechanics: # ------------------------------------------------------------------------------------------------------------------- Mechanics Paths
+  /mechanics: 
     
     post: # ------------------------------------------------------------------------------------------------------------------- Create Mechanic
       tags:
@@ -253,7 +253,7 @@ paths:
               salary: 80000
               title: "Staff"
 
-  /mechanics/{id}:  # ------------------------------------------------------------------------------------------------------------------- Mechanic By ID Paths
+  /mechanics/{id}:  
     
     delete: # ------------------------------------------------------------------------------------------------------------------- Delete Mechanic
       tags:
@@ -307,7 +307,7 @@ paths:
               salary: 80000
               title: "Staff"
     
-  /mechanics/search:  # ------------------------------------------------------------------------------------------------------------------- Mechanic By Search Parameter Path
+  /mechanics/search:  
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic by Search Parameter
       tags:
@@ -326,7 +326,7 @@ paths:
           schema:
             $ref: "#/definitions/SearchMechanicsList"
 
-  /mechanics/activity_tracker: # ------------------------------------------------------------------------------------------------------------------- Mechanic Activity Tracker Path
+  /mechanics/activity_tracker: 
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic Activity
       tags:
@@ -339,7 +339,7 @@ paths:
           schema:
             $ref: '#/definitions/GetAllMechanics'
 
-  /mechanics/paginated: # ------------------------------------------------------------------------------------------------------------------- Mechanic Paginated Path
+  /mechanics/paginated: 
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Mechanic Paginated 
       tags:
@@ -366,8 +366,8 @@ paths:
             $ref: '#/definitions/GetAllMechanics'
 
 
-
-  /services:  # ------------------------------------------------------------------------------------------------------------------- Services Path
+  # ------------------------------------------------------------------------------------------------------------------- Services Paths
+  /services:  
 
     post: # ------------------------------------------------------------------------------------------------------------------- Create Service
       tags:
@@ -410,7 +410,7 @@ paths:
               id: 1
               name: "Oil Change"
   
-  /services/{id}: # ------------------------------------------------------------------------------------------------------------------- Services By ID Path
+  /services/{id}: 
 
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Service By ID
       tags:
@@ -484,8 +484,8 @@ paths:
               "Deleted Service: Oil Change"
 
 
-
-  /tickets:  # ------------------------------------------------------------------------------------------------------------------- Tickets Path
+  # ------------------------------------------------------------------------------------------------------------------- Ticket Paths
+  /tickets:  
 
     post: # ------------------------------------------------------------------------------------------------------------------- Create Ticket
       tags:
@@ -570,7 +570,7 @@ paths:
                   - id: 2
                     service_desc: "Brake Inspection"
 
-  /tickets/{id}:  # ------------------------------------------------------------------------------------------------------------------- Tickets By ID Path
+  /tickets/{id}:  
 
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Tickets By ID
       tags:
@@ -675,8 +675,8 @@ paths:
           description: "Deleted Ticket: 6"
 
 
-
-  /item_descs:  # ------------------------------------------------------------------------------------------------------------------- Item Descriptions Paths
+  # ------------------------------------------------------------------------------------------------------------------- Item Description Paths
+  /item_descs:  
     
     post: # ------------------------------------------------------------------------------------------------------------------- Create Item Descriptions
       tags:
@@ -721,7 +721,7 @@ paths:
               name: "Tire"
               price: 150.99    
 
-  /item_descs/{id}:  # ------------------------------------------------------------------------------------------------------------------- Item By ID Path
+  /item_descs/{id}:  
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Item By ID
       tags:
@@ -796,7 +796,7 @@ paths:
             application/json:
               "Deleted Item: Gasket"
 
-  /item_descs/search:  # ------------------------------------------------------------------------------------------------------------------- Item By Search Parameter Path
+  /item_descs/search:  
     
     get:  # ------------------------------------------------------------------------------------------------------------------- Get Item by Search Parameter
       tags:
@@ -824,8 +824,78 @@ paths:
               stock: 12
 
 
+  # ------------------------------------------------------------------------------------------------------------------- Serial Items Paths
+  /serial_items/{description_id}: 
 
-# ---------------------------------------------------------------- Serial Items Paths Next 
+    post: # ------------------------------------------------------------------------------------------------------------------- Create Serial Item
+      tags:
+        - Serial Items
+      summary: Create a new serial item
+      description: Creates a new SerialItem using the given ItemDesc ID
+      parameters:
+        - name: description_id
+          in: path
+          required: true
+          description: ID of the ItemDesc to associate the serial item with
+          schema:
+            type: integer
+      responses:
+        '201':
+          description: Serial item successfully created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SerialItemPayload'
+
+  /serial_items:
+
+    get:  # ------------------------------------------------------------------------------------------------------------------- Get Serial Items
+      tags:
+        - Serial Items 
+      summary: Retrieve all serial items 
+      description: Returns a list of all serial items in the system
+      produces:
+        - application/json
+      responses: 
+        200:
+          description: A list of serial items 
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/serial_item_response'
+          examples:
+            application/json:
+              - id: 1
+                description_id: 5
+                ticket_id: 1
+              - id: 2
+                description_id: 7
+                ticket_id: 3
+
+  /serial_items/{serial_item_id}:
+
+    delete:  # ---------------------------------------------------------------------------------------------------------------- Delete Serial Item
+      tags:
+        - Serial Items
+      summary: Delete a serial item by ID
+      description: Deletes the serial item matching the given serial item ID
+      produces:
+        - application/json
+      parameters:
+        - in: path
+          name: serial_item_id
+          required: true
+          type: integer
+          description: The ID of the serial item to delete
+      responses:
+        200:
+          description: Successfully deleted the serial item
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: "Deleted Item: Oil Filter, Serial Number: 5"
 
 
 
@@ -1143,7 +1213,23 @@ definitions:
         type: integer
         example: 12
 
+  # ------------------------------------------------------------------------------------------------------------------- Serial Items
+  SerialItemPayload:
+    type: object
+    properties:
+      id: 
+        type: integer 
+      description_id:
+        type: integer
+      ticket_id:
+        type: integer
 
-
-
-
+  serial_item_response:
+    type: object
+    properties:
+      id: 
+        type: integer
+      description_id: 
+        type: integer
+      ticket_id: 
+        type: integer
