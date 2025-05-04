@@ -64,6 +64,19 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code,200)
         return response.json['Token']
     
+    def test_get_all_mechanics(self):   #------------------------------------------------------ Get All Mechanics Test Passed 🙂
+        response = self.client.get('/mechanics/')
+        self.assertEqual(response.status_code, 200)
+        
+        data = response.get_json()  
+
+        mechanic_exists = False
+
+        for mechanic in data:   
+            if mechanic['email'] == "test@email.com":
+                mechanic_exists = True
+                break 
+        self.assertTrue
 
 
 
