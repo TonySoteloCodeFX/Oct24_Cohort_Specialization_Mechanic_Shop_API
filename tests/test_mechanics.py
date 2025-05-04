@@ -103,6 +103,11 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['title'], 'Lead Mechanic')
 
+    def test_delete_mechanic(self): #------------------------------------------------------ Delete Mechanic Test Passed 🙂
+        headers = {'Authorization': f'Bearer {self.token}'}
+        response = self.client.delete('/mechanics/1', headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Deleted Mechanic', response.json)
 
 
 
