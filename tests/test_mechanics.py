@@ -83,4 +83,28 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json['name'], 'test_user')
 
+    def test_get_mechanic_invalid_id(self): #------------------------------------------------------ Invalid Mechanics ID Test Passed 🙂
+        response = self.client.get('/mechanics/5')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json['error'], 'Mechanic does not exist.')
+
+    def test_update_mechanic(self): #------------------------------------------------------ Update Mechanic Test Passed 🙂
+        updated_data = {
+            "name": "Updated Name",
+            "email": "test@email.com",
+            "phone": "updated_phone",
+            "address": "updated_address",
+            "title": "Lead Mechanic",
+            "salary": 55000,
+            "password": "new_password"
+        }
+        headers = {'Authorization': f'Bearer {self.token}'}
+        response = self.client.put('/mechanics/', json=updated_data, headers=headers)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['title'], 'Lead Mechanic')
+
+
+
+
+
 
