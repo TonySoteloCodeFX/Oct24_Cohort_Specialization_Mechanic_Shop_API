@@ -115,6 +115,7 @@ class TestMechanic(unittest.TestCase):
         self.assertIn('mechanics', response.json)
         self.assertEqual(response.json['message'], 'success')
 
-
-
-
+    def test_search_mechanic(self): #------------------------------------------------------ Search Mechanic Test Passed 🙂
+        response = self.client.get('/mechanics/search?search=test')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(any("test" in m['name'].lower() for m in response.json['mechanics']))
