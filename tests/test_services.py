@@ -59,4 +59,15 @@ class TestService(unittest.TestCase):
         put_response = self.client.put(f'/services/{service_id}', json=updated_payload)
         self.assertEqual(put_response.status_code, 200)
         self.assertEqual(put_response.json['service_desc'], "Transmission Flush")
+    
+    def test_delete_service(self): #------------------------------------------------------ Delete Service Test Passed 🙂
+        post_response = self.client.post('/services/', json={"service_desc": "Coolant Replacement"})
+        service_id = post_response.get_json()['id']
+
+        delete_response = self.client.delete(f'/services/{service_id}')
+        self.assertEqual(delete_response.status_code, 200)
+
+        get_after_delete = self.client.get(f'/services/{service_id}')
+        self.assertEqual(get_after_delete.status_code, 200)
+        self.assertEqual(get_after_delete.json.get("error"), "Service does not exist.")
 
