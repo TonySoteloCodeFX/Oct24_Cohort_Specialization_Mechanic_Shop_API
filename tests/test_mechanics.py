@@ -78,5 +78,9 @@ class TestMechanic(unittest.TestCase):
                 break 
         self.assertTrue
 
+    def test_get_mechanic_by_id(self):  #------------------------------------------------------ Get Mechanics By ID Test Passed 🙂
+        response = self.client.get('/mechanics/1')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['name'], 'test_user')
 
 
