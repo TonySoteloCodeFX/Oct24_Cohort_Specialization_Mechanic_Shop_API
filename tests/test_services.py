@@ -47,4 +47,16 @@ class TestService(unittest.TestCase):
 
         self.assertEqual(get_response.status_code, 200)
         self.assertEqual(get_response.json['service_desc'], "Alignment")
+    
+    def test_update_service(self): #------------------------------------------------------ Update Service Test Passed 🙂
+        post_response = self.client.post('/services/', json={"service_desc": "Oil Flush"})
+        service_id = post_response.get_json()['id']
+
+        updated_payload = {
+            "service_desc": "Transmission Flush"
+        }
+
+        put_response = self.client.put(f'/services/{service_id}', json=updated_payload)
+        self.assertEqual(put_response.status_code, 200)
+        self.assertEqual(put_response.json['service_desc'], "Transmission Flush")
 
