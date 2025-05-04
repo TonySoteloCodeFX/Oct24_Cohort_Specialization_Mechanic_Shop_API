@@ -109,6 +109,11 @@ class TestMechanic(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn('Deleted Mechanic', response.json)
 
+    def test_activity_tracker(self): #------------------------------------------------------ Activity Tracker Test Passed 🙂    
+        response = self.client.get('/mechanics/activity_tracker')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('mechanics', response.json)
+        self.assertEqual(response.json['message'], 'success')
 
 
 
