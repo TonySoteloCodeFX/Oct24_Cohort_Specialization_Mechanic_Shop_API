@@ -38,6 +38,18 @@ class TestTicket(unittest.TestCase):
 
         self.client = self.app.test_client()
     
+    def create_ticket(self): # ------------------------------------------------------ Create Ticket Passed 🙂
+        payload = {
+            "service_date": "2025-05-04",
+            "vin": "1HGCM82633A004352",
+            "customer_id": self.customer_id,
+            "mechanic_ids": [self.mechanic_id],
+            "service_ids": [self.service_id]
+        }
+        response = self.client.post('/tickets/', json=payload)
+        self.assertEqual(response.status_code, 201)
+        return response.get_json()  
+    
     def test_create_ticket(self):  # ------------------------------------------------------ Create Ticket Passed 🙂
         payload = {
             "service_date": str(date.today()),
@@ -50,3 +62,44 @@ class TestTicket(unittest.TestCase):
         response = self.client.post('/tickets/', json=payload)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json['vin'], payload['vin'])
+    
+    def test_get_all_tickets(self):  # ------------------------------------------------------ Get All Tickets 🙂
+        self.test_create_ticket()
+        response = self.client.get('/tickets/')
+        self.assertEqual(response.status_code, 200)
+        self.assertGreaterEqual(len(response.get_json()), 1)
+    
+    def test_get_ticket_by_id(self):  # ------------------------------------------------------ Get Ticket by ID 🙂
+        ticket = self.create_ticket()
+        ticket_id = ticket['id']
+
+        response = self.client.get(f'/tickets/{ticket_id}')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['id'], ticket_id)
+
+    def test_update_ticket(self):  # ------------------------------------------------------ Update Ticket 🙂
+        self.test_create_ticket()
+        updated_payload = {
+            "service_date": str(date.today()),
+            "vin": "UPDATEDVIN123456",
+            "customer_id": self.customer_id,
+            "mechanic_ids": [self.mechanic_id],
+            "service_ids": [self.service_id]
+        }
+        response = self.client.put('/tickets/1', json=updated_payload)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json['vin'], "UPDATEDVIN123456")
+    
+    def test_add_item_to_ticket(self):  # ------------------------------------------------------ Add Item to Ticket 🙂
+        self.test_create_ticket()
+        response = self.client.put(f"/tickets/1/add_item/{self.description_id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("Successfully added", response.json['message'])
+    
+    def test_add_item_out_of_stock(self):  # ------------------------------------------------------ Add Item Out of Stock 🙂
+        self.test_create_ticket()
+        self.client.put(f"/tickets/1/add_item/{self.description_id}")  
+        response = self.client.put(f"/tickets/1/add_item/{self.description_id}") 
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json['error'], "Item out of stock.")
+    
